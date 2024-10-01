@@ -14,9 +14,7 @@
 
 namespace Modules\ModuleQueueCallBack\Models;
 
-use MikoPBX\Common\Models\Providers;
 use MikoPBX\Modules\Models\ModulesModelsBase;
-use Phalcon\Mvc\Model\Relation;
 
 class ModuleQueueCallBack extends ModulesModelsBase
 {

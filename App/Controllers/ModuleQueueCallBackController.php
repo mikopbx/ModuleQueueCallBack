@@ -12,7 +12,6 @@ use MikoPBX\Common\Models\SoundFiles;
 use MikoPBX\Modules\PbxExtensionUtils;
 use Modules\ModuleQueueCallBack\App\Forms\ModuleQueueCallBackForm;
 use Modules\ModuleQueueCallBack\Models\ModuleQueueCallBack;
-use MikoPBX\Common\Models\Providers;
 use Modules\ModuleQueueCallBack\Models\ModuleQueueList;
 
 class ModuleQueueCallBackController extends BaseController

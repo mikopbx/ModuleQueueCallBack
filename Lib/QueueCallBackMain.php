@@ -4,7 +4,6 @@ namespace Modules\ModuleQueueCallBack\Lib;
 
 
 use MikoPBX\Core\System\Processes;
-use MikoPBX\Core\System\Util;
 use MikoPBX\Core\Workers\Cron\WorkerSafeScriptsCore;
 use MikoPBX\Modules\PbxExtensionBase;
 use MikoPBX\Modules\PbxExtensionUtils;

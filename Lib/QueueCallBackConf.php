@@ -24,9 +24,9 @@ class QueueCallBackConf extends ConfigClass
     /**
      * Receive information about mikopbx main database changes
      *
-     * @param $data
+     * @param mixed $data
      */
-    public function modelsEventChangeData($data): void
+    public function modelsEventChangeData(mixed $data): void
     {
         if ( $data['model'] === ModuleQueueList::class) {
             $moduleEnabled  = PbxExtensionUtils::isEnabled($this->moduleUniqueId);
