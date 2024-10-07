@@ -26,7 +26,7 @@ class QueueCallBackConf extends ConfigClass
      *
      * @param mixed $data
      */
-    public function modelsEventChangeData(mixed $data): void
+    public function modelsEventChangeData($data): void
     {
         if ( $data['model'] === ModuleQueueList::class) {
             $moduleEnabled  = PbxExtensionUtils::isEnabled($this->moduleUniqueId);
