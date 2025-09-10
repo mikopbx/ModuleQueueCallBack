@@ -11,8 +11,8 @@ var idUrl = 'module-queue-call-back';
 var idForm = 'module-queue-call-back-form';
 var className = 'ModuleQueueCallBack';
 var inputClassName = 'mikopbx-module-input';
-/* global globalRootUrl, globalTranslate, Form, Config */
 
+/* global globalRootUrl, globalTranslate, Form, Config */
 var ModuleQueueCallBack = {
   $formObj: $('#' + idForm),
   $checkBoxes: $('#' + idForm + ' .ui.checkbox'),
@@ -22,7 +22,6 @@ var ModuleQueueCallBack = {
   $disabilityFields: $('#' + idForm + '  .disability'),
   $statusToggle: $('#module-status-toggle'),
   $moduleStatus: $('#status'),
-
   /**
    * Field validation rules
    * https://semantic-ui.com/behaviors/form.html
@@ -50,7 +49,6 @@ var ModuleQueueCallBack = {
       }]
     }
   },
-
   /**
    * On page load we init some Semantic UI library
    */
@@ -62,19 +60,16 @@ var ModuleQueueCallBack = {
     window.addEventListener('ModuleStatusChanged', window[className].checkStatusToggle);
     window[className].initializeForm();
     $('.menu .item').tab();
-    $.get(idUrl + '/getTablesDescription', function (result) {
+    $.get(globalRootUrl + idUrl + '/getTablesDescription', function (result) {
       for (var key in result['data']) {
         var tableName = key + '-table';
-
         if ($('#' + tableName).attr('id') === undefined) {
           continue;
         }
-
         window[className].initTable(tableName, result['data'][key]);
       }
     });
   },
-
   /**
    * Подготавливает список выбора
    * @param selected
@@ -95,7 +90,6 @@ var ModuleQueueCallBack = {
     });
     return values;
   },
-
   /**
    * Обработка изменения группы в списке
    */
@@ -105,29 +99,25 @@ var ModuleQueueCallBack = {
     tdInput.attr('value', value);
     var currentRowId = $(choice).closest('tr').attr('id');
     var tableName = $(choice).closest('table').attr('id').replace('-table', '');
-
     if (currentRowId !== undefined && tableName !== undefined) {
       window[className].sendChangesToServer(tableName, currentRowId);
     }
   },
-
   /**
    * Add new Table.
    */
   initTable: function initTable(tableName, options) {
     var columns = [];
     var columnsArray4Sort = [];
-
     for (var colName in options['cols']) {
       columns.push({
         data: colName
       });
       columnsArray4Sort.push(colName);
     }
-
     $('#' + tableName).DataTable({
       ajax: {
-        url: idUrl + options.ajaxUrl + '?table=' + tableName.replace('-table', ''),
+        url: globalRootUrl + idUrl + options.ajaxUrl + '?table=' + tableName.replace('-table', ''),
         dataSrc: 'data'
       },
       columns: columns,
@@ -140,7 +130,6 @@ var ModuleQueueCallBack = {
       },
       language: SemanticLocalization.dataTableLocalisation,
       ordering: false,
-
       /**
        * Builder row presentation
        * @param row
@@ -149,10 +138,8 @@ var ModuleQueueCallBack = {
       createdRow: function createdRow(row, data) {
         var cols = $('td', row);
         var headers = $('#' + tableName + ' thead tr th');
-
         for (var key in data) {
           var index = columnsArray4Sort.indexOf(key);
-
           if (key === 'rowIcon') {
             cols.eq(index).html('<i class="ui ' + data[key] + ' circle icon"></i>');
           } else if (key === 'delButton') {
@@ -160,42 +147,32 @@ var ModuleQueueCallBack = {
             cols.eq(index).html(templateDeleteButton);
           } else if (key === 'priority') {
             cols.eq(index).addClass('dragHandle');
-            cols.eq(index).html('<i class="ui sort circle icon"></i>'); // Приоритет устанавливаем для строки.
-
+            cols.eq(index).html('<i class="ui sort circle icon"></i>');
+            // Приоритет устанавливаем для строки.
             $(row).attr('m-priority', data[key]);
           } else {
             var template = '<div class="ui transparent fluid input inline-edit">' + '<input colName="' + key + '" class="' + inputClassName + '" type="text" data-value="' + data[key] + '" value="' + data[key] + '"></div>';
             $('td', row).eq(index).html(template);
           }
-
           if (options['cols'][key] === undefined) {
             continue;
           }
-
           var additionalClass = options['cols'][key]['class'];
-
           if (additionalClass !== undefined && additionalClass !== '') {
             headers.eq(index).addClass(additionalClass);
           }
-
           var header = options['cols'][key]['header'];
-
           if (header !== undefined && header !== '') {
             headers.eq(index).html(header);
           }
-
           var selectMetaData = options['cols'][key]['select'];
-
           if (selectMetaData !== undefined) {
             var newTemplate = $('#template-select').html().replace('PARAM', data[key]);
-
             var _template = '<input class="' + inputClassName + '" colName="' + key + '" selectType="' + selectMetaData + '" style="display: none;" type="text" data-value="' + data[key] + '" value="' + data[key] + '"></div>';
-
             cols.eq(index).html(newTemplate + _template);
           }
         }
       },
-
       /**
        * Draw event - fired once the table has completed a draw.
        */
@@ -203,17 +180,16 @@ var ModuleQueueCallBack = {
         window[className].drowSelectGroup(settings.sTableId);
       }
     });
-    var body = $('body'); // Клик по полю. Вход для редактирования значения.
-
+    var body = $('body');
+    // Клик по полю. Вход для редактирования значения.
     body.on('focusin', '.' + inputClassName, function (e) {
       $(e.target).transition('glow');
       $(e.target).closest('div').removeClass('transparent').addClass('changed-field');
       $(e.target).attr('readonly', false);
-    }); // Отправка формы на сервер по Enter или Tab
-
+    });
+    // Отправка формы на сервер по Enter или Tab
     $(document).on('keydown', function (e) {
       var keyCode = e.keyCode || e.which;
-
       if (keyCode === 13 || keyCode === 9 && $(':focus').hasClass('mikopbx-module-input')) {
         window[className].endEditInput();
       }
@@ -224,13 +200,13 @@ var ModuleQueueCallBack = {
       var tableName = $(e.target).closest('table').attr('id').replace('-table', '');
       window[className].deleteRow(tableName, currentRowId);
     }); // Добавление новой строки
+
     // Отправка формы на сервер по уходу с поля ввода
+    body.on('focusout', '.' + inputClassName, window[className].endEditInput);
 
-    body.on('focusout', '.' + inputClassName, window[className].endEditInput); // Кнопка "Добавить новую запись"
-
+    // Кнопка "Добавить новую запись"
     $('[id-table = "' + tableName + '"]').on('click', window[className].addNewRow);
   },
-
   /**
    * Перемещение строки, изменение приоритета.
    */
@@ -241,13 +217,11 @@ var ModuleQueueCallBack = {
       var ruleId = $(obj).attr('id');
       var oldPriority = parseInt($(obj).attr('m-priority'), 10);
       var newPriority = obj.rowIndex;
-
       if (!isNaN(ruleId) && oldPriority !== newPriority) {
         priorityWasChanged = true;
         priorityData[ruleId] = newPriority;
       }
     });
-
     if (priorityWasChanged) {
       $.api({
         on: 'now',
@@ -257,7 +231,6 @@ var ModuleQueueCallBack = {
       });
     }
   },
-
   /**
    * Окончание редактирования поля ввода.
    * Не относится к select.
@@ -268,13 +241,11 @@ var ModuleQueueCallBack = {
     $el.each(function (index, obj) {
       var currentRowId = $(obj).attr('id');
       var tableName = $(obj).closest('table').attr('id').replace('-table', '');
-
       if (currentRowId !== undefined && tableName !== undefined) {
         window[className].sendChangesToServer(tableName, currentRowId);
       }
     });
   },
-
   /**
    * Добавление новой строки в таблицу.
    * @param e
@@ -283,12 +254,11 @@ var ModuleQueueCallBack = {
     var idTable = $(e.target).attr('id-table');
     var table = $('#' + idTable);
     e.preventDefault();
-    table.find('.dataTables_empty').remove(); // Отправим на запись все что не записано еще
-
+    table.find('.dataTables_empty').remove();
+    // Отправим на запись все что не записано еще
     var $el = table.find('.changed-field').closest('tr');
     $el.each(function (index, obj) {
       var currentRowId = $(obj).attr('id');
-
       if (currentRowId !== undefined) {
         window[className].sendChangesToServer(currentRowId);
       }
@@ -298,7 +268,6 @@ var ModuleQueueCallBack = {
     table.find('tbody > tr:first').before(rowTemplate);
     window[className].drowSelectGroup(idTable);
   },
-
   /**
    * Обновление select элементов.
    * @param tableId
@@ -321,7 +290,6 @@ var ModuleQueueCallBack = {
       dragHandle: '.dragHandle'
     });
   },
-
   /**
    * Удаление строки
    * @param tableName
@@ -329,19 +297,16 @@ var ModuleQueueCallBack = {
    */
   deleteRow: function deleteRow(tableName, id) {
     var table = $('#' + tableName + '-table');
-
     if (id.substr(0, 3) === 'new') {
       table.find('tr#' + id).remove();
       return;
     }
-
     $.api({
       url: window[className].deleteRecordAJAXUrl + '?id=' + id + '&table=' + tableName,
       on: 'now',
       onSuccess: function onSuccess(response) {
         if (response.success) {
           table.find('tr#' + id).remove();
-
           if (table.find('tbody > tr').length === 0) {
             table.find('tbody').append('<tr class="odd"></tr>');
           }
@@ -349,7 +314,6 @@ var ModuleQueueCallBack = {
       }
     });
   },
-
   /**
    * Отправка данных на сервер при измении
    */
@@ -361,20 +325,16 @@ var ModuleQueueCallBack = {
     var notEmpty = false;
     $("tr#" + recordId + ' .' + inputClassName).each(function (index, obj) {
       var colName = $(obj).attr('colName');
-
       if (colName !== undefined) {
         data[$(obj).attr('colName')] = $(obj).val();
-
         if ($(obj).val() !== '') {
           notEmpty = true;
         }
       }
     });
-
     if (notEmpty === false) {
       return;
     }
-
     $("tr#" + recordId + " .user.circle").removeClass('user circle').addClass('spinner loading');
     $.api({
       url: window[className].saveTableAJAXUrl,
@@ -391,7 +351,6 @@ var ModuleQueueCallBack = {
           table.find("tr#" + rowId + " input").attr('readonly', true);
           table.find("tr#" + rowId + " div").removeClass('changed-field loading').addClass('transparent');
           table.find("tr#" + rowId + " .spinner.loading").addClass('user circle').removeClass('spinner loading');
-
           if (rowId !== response.data['newId']) {
             $("tr#".concat(rowId)).attr('id', response.data['newId']);
           }
@@ -401,7 +360,6 @@ var ModuleQueueCallBack = {
         if (response.message !== undefined) {
           UserMessage.showMultiString(response.message);
         }
-
         $("tr#" + recordId + " .spinner.loading").addClass('user circle').removeClass('spinner loading');
       },
       onError: function onError(errorMessage, element, xhr) {
@@ -411,7 +369,6 @@ var ModuleQueueCallBack = {
       }
     });
   },
-
   /**
    * Change some form elements classes depends of module status
    */
@@ -424,7 +381,6 @@ var ModuleQueueCallBack = {
       window[className].$moduleStatus.hide();
     }
   },
-
   /**
    * Send command to restart module workers after data changes,
    * Also we can do it on TemplateConf->modelsEventChangeData method
@@ -446,7 +402,6 @@ var ModuleQueueCallBack = {
       }
     });
   },
-
   /**
    * We can modify some data before form send
    * @param settings
@@ -457,14 +412,12 @@ var ModuleQueueCallBack = {
     result.data = window[className].$formObj.form('get values');
     return result;
   },
-
   /**
    * Some actions after forms send
    */
   cbAfterSendForm: function cbAfterSendForm() {
     window[className].applyConfigurationChanges();
   },
-
   /**
    * Initialize form parameters
    */
@@ -476,7 +429,6 @@ var ModuleQueueCallBack = {
     Form.cbAfterSendForm = window[className].cbAfterSendForm;
     Form.initialize();
   },
-
   /**
    * Update the module state on form label
    * @param status
@@ -487,17 +439,14 @@ var ModuleQueueCallBack = {
         window[className].$moduleStatus.removeClass('grey').removeClass('red').addClass('green');
         window[className].$moduleStatus.html(globalTranslate.module_queue_call_backConnected);
         break;
-
       case 'Disconnected':
         window[className].$moduleStatus.removeClass('green').removeClass('red').addClass('grey');
         window[className].$moduleStatus.html(globalTranslate.module_queue_call_backDisconnected);
         break;
-
       case 'Updating':
         window[className].$moduleStatus.removeClass('green').removeClass('red').addClass('grey');
         window[className].$moduleStatus.html("<i class=\"spinner loading icon\"></i>".concat(globalTranslate.module_queue_call_backUpdateStatus));
         break;
-
       default:
         window[className].$moduleStatus.removeClass('green').removeClass('red').addClass('grey');
         window[className].$moduleStatus.html(globalTranslate.module_queue_call_backDisconnected);

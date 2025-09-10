@@ -31,6 +31,7 @@ class QueueCallBackConf extends ConfigClass
         if ( $data['model'] === ModuleQueueList::class) {
             $moduleEnabled  = PbxExtensionUtils::isEnabled($this->moduleUniqueId);
             $this->generateCustomConfig($moduleEnabled);
+            PBX::dialplanReload();
         }
     }
 

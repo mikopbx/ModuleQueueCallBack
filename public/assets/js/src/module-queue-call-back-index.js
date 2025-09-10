@@ -65,7 +65,7 @@ const ModuleQueueCallBack = {
 		window.addEventListener('ModuleStatusChanged', window[className].checkStatusToggle);
 		window[className].initializeForm();
 		$('.menu .item').tab();
-		$.get( idUrl + '/getTablesDescription', function( result ) {
+		$.get( globalRootUrl +idUrl + '/getTablesDescription', function( result ) {
 			for (let key in result['data']) {
 				let tableName = key + '-table';
 				if( $('#'+tableName).attr('id') === undefined){
@@ -123,7 +123,7 @@ const ModuleQueueCallBack = {
 		}
 		$('#' + tableName).DataTable( {
 			ajax: {
-				url: idUrl + options.ajaxUrl + '?table=' +tableName.replace('-table', ''),
+				url: globalRootUrl + idUrl + options.ajaxUrl + '?table=' +tableName.replace('-table', ''),
 				dataSrc: 'data'
 			},
 			columns: columns,
